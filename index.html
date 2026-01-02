@@ -712,6 +712,13 @@
                 <button class="btn btn-danger" id="endSessionBtnSettings" onclick="endSession()" disabled>⏸️ End Current Session</button>
             </div>
 
+            <!-- Change Password -->
+            <div style="background: #F3E8FF; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px; color: #1F2937; font-size: 16px;">🔐 Change Password</h3>
+                <p style="color: #6B21A8; font-size: 14px; margin-bottom: 15px;">Update security passwords for different features.</p>
+                <button class="btn btn-primary" onclick="showChangePasswordOptions()" style="background: #8B5CF6;">🔑 Change Passwords</button>
+            </div>
+
             <button class="btn btn-secondary" onclick="closeModal('settingsModal')" style="width: 100%;">Close</button>
         </div>
     </div>
@@ -733,6 +740,27 @@
         </div>
     </div>
 
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">🔐 Change Passwords</div>
+            <p style="color: #6B7280; margin-bottom: 20px;">Select which password you want to change, or change all at once.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                <button class="btn btn-secondary" onclick="changeIndividualPassword('login')">🔓 Login</button>
+                <button class="btn btn-secondary" onclick="changeIndividualPassword('inventory')">📦 Inventory</button>
+                <button class="btn btn-secondary" onclick="changeIndividualPassword('editStock')">✏️ Edit Stock</button>
+                <button class="btn btn-secondary" onclick="changeIndividualPassword('resetData')">🔄 Reset Data</button>
+            </div>
+
+            <div style="border-top: 2px solid #E5E7EB; padding-top: 20px; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="changeAllPasswords()" style="width: 100%; background: #8B5CF6;">🔑 Change All Passwords</button>
+            </div>
+
+            <button class="btn btn-secondary" onclick="closeModal('changePasswordModal')" style="width: 100%; margin-top: 15px;">Cancel</button>
+        </div>
+    </div>
+
     <script>
         // Data Storage
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
@@ -742,9 +770,16 @@
             gcashName: '',
             gcashNumber: ''
         };
+        let passwords = JSON.parse(localStorage.getItem('passwords')) || {
+            login: 'KevinCacho',
+            inventory: 'KevinCacho',
+            editStock: 'KevinCacho',
+            resetData: 'KevinCacho'
+        };
         let cart = [];
         let editingOrderId = null;
         let pendingGcashTotal = 0;
+        let inventoryUnlocked = false;
 
         // Initialize
         window.onload = function() {
@@ -811,6 +846,18 @@
 
         // Tab Switching
         function switchTab(tabName) {
+            // Check password for Inventory tab
+            if (tabName === 'inventory' && !inventoryUnlocked) {
+                const password = prompt('🔒 Enter password to access Inventory:');
+                
+                if (password !== passwords.inventory) {
+                    alert('❌ Incorrect password!');
+                    return;
+                }
+                
+                inventoryUnlocked = true;
+            }
+
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -1498,7 +1545,7 @@
         function showEditStockModal() {
             const password = prompt('🔒 Enter password to edit stock:');
             
-            if (password !== 'KevinCacho') {
+            if (password !== passwords.editStock) {
                 alert('❌ Incorrect password!');
                 return;
             }
@@ -1580,6 +1627,87 @@
             localStorage.setItem('settings', JSON.stringify(settings));
 
             alert('✅ Payment settings updated successfully!');
+        }
+
+        // Change Password Functions
+        function showChangePasswordOptions() {
+            closeModal('settingsModal');
+            document.getElementById('changePasswordModal').classList.add('show');
+        }
+
+        function changeIndividualPassword(type) {
+            const labels = {
+                login: 'Login',
+                inventory: 'Inventory',
+                editStock: 'Edit Stock',
+                resetData: 'Reset Data'
+            };
+
+            const currentPassword = prompt(`Enter current ${labels[type]} password:`);
+            
+            if (currentPassword !== passwords[type]) {
+                alert('❌ Incorrect current password!');
+                return;
+            }
+
+            const newPassword = prompt(`Enter new ${labels[type]} password:`);
+            
+            if (!newPassword || newPassword.trim() === '') {
+                alert('❌ Password cannot be empty!');
+                return;
+            }
+
+            const confirmPassword = prompt(`Confirm new ${labels[type]} password:`);
+            
+            if (newPassword !== confirmPassword) {
+                alert('❌ Passwords do not match!');
+                return;
+            }
+
+            passwords[type] = newPassword;
+            localStorage.setItem('passwords', JSON.stringify(passwords));
+            
+            alert(`✅ ${labels[type]} password changed successfully!`);
+            closeModal('changePasswordModal');
+        }
+
+        function changeAllPasswords() {
+            const currentPassword = prompt('Enter current master password (any of your current passwords):');
+            
+            const isValid = Object.values(passwords).some(pwd => pwd === currentPassword);
+            
+            if (!isValid) {
+                alert('❌ Incorrect password!');
+                return;
+            }
+
+            const newPassword = prompt('Enter new password (will be used for ALL features):');
+            
+            if (!newPassword || newPassword.trim() === '') {
+                alert('❌ Password cannot be empty!');
+                return;
+            }
+
+            const confirmPassword = prompt('Confirm new password:');
+            
+            if (newPassword !== confirmPassword) {
+                alert('❌ Passwords do not match!');
+                return;
+            }
+
+            if (!confirm('⚠️ This will change ALL passwords (Login, Inventory, Edit Stock, Reset Data) to the same password. Continue?')) {
+                return;
+            }
+
+            passwords.login = newPassword;
+            passwords.inventory = newPassword;
+            passwords.editStock = newPassword;
+            passwords.resetData = newPassword;
+            
+            localStorage.setItem('passwords', JSON.stringify(passwords));
+            
+            alert('✅ All passwords changed successfully!\n\nNew password applies to:\n- Login\n- Inventory\n- Edit Stock\n- Reset Data');
+            closeModal('changePasswordModal');
         }
 
         function exportData() {
@@ -1680,7 +1808,7 @@
         function clearAllData() {
             const password = prompt('🔒 Enter password to reset all data:');
             
-            if (password !== 'KevinCacho') {
+            if (password !== passwords.resetData) {
                 alert('❌ Incorrect password!');
                 return;
             }
@@ -1693,13 +1821,22 @@
             currentSession = null;
             cart = [];
             
+            // Reset passwords to default
+            passwords = {
+                login: 'KevinCacho',
+                inventory: 'KevinCacho',
+                editStock: 'KevinCacho',
+                resetData: 'KevinCacho'
+            };
+            localStorage.setItem('passwords', JSON.stringify(passwords));
+            
             updateUI();
             renderInventory();
             renderCart();
             renderSessionOrders();
             updateItemSelect();
             
-            alert('✅ All data has been cleared!');
+            alert('✅ All data has been cleared!\n\nPasswords have been reset to default: KevinCacho');
         }
 
         // Click outside modal to close
@@ -1713,7 +1850,7 @@
         function login() {
             const password = document.getElementById('loginPassword').value;
             
-            if (password === 'KevinCacho') {
+            if (password === passwords.login) {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.add('show');
                 document.getElementById('loginPassword').value = '';
