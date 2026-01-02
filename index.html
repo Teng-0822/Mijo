@@ -779,7 +779,6 @@
         let cart = [];
         let editingOrderId = null;
         let pendingGcashTotal = 0;
-        let inventoryUnlocked = false;
 
         // Initialize
         window.onload = function() {
@@ -846,16 +845,14 @@
 
         // Tab Switching
         function switchTab(tabName) {
-            // Check password for Inventory tab
-            if (tabName === 'inventory' && !inventoryUnlocked) {
+            // Always check password for Inventory tab
+            if (tabName === 'inventory') {
                 const password = prompt('🔒 Enter password to access Inventory:');
                 
                 if (password !== passwords.inventory) {
                     alert('❌ Incorrect password!');
                     return;
                 }
-                
-                inventoryUnlocked = true;
             }
 
             // Hide all tabs
