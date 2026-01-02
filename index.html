@@ -542,6 +542,31 @@
             margin-bottom: 15px;
         }
 
+        /* Settings List Style */
+        .settings-item {
+            padding: 18px 20px;
+            border-bottom: 1px solid #E5E7EB;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .settings-item:hover {
+            background: #F9FAFB;
+        }
+
+        .settings-item:active {
+            background: #F3F4F6;
+        }
+
+        .settings-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .settings-item.disabled:hover {
+            background: white;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .grid-2, .grid-3 {
@@ -791,108 +816,124 @@
 
     <!-- Settings Modal -->
     <div id="settingsModal" class="modal">
-        <div class="modal-content">
-            <!-- Sidebar Menu -->
-            <div class="settings-sidebar">
-                <h3 style="margin-bottom: 20px; color: #1F2937; font-size: 18px;">⚙️ Settings</h3>
-                <div class="settings-menu-item active" onclick="showSettingsSection('payment')">
-                    <span class="settings-menu-icon">💳</span>
-                    <span>Payment</span>
-                </div>
-                <div class="settings-menu-item" onclick="showSettingsSection('data')">
-                    <span class="settings-menu-icon">💾</span>
-                    <span>Data Backup</span>
-                </div>
-                <div class="settings-menu-item" onclick="showSettingsSection('session')">
-                    <span class="settings-menu-icon">⏸️</span>
-                    <span>Session</span>
-                </div>
-                <div class="settings-menu-item" onclick="showSettingsSection('security')">
-                    <span class="settings-menu-icon">🔐</span>
-                    <span>Security</span>
-                </div>
-                <div style="border-top: 1px solid #E5E7EB; margin: 15px 0; padding-top: 15px;">
-                    <button class="btn btn-secondary" onclick="closeModal('settingsModal')" style="width: 100%; padding: 10px;">Close</button>
-                </div>
+        <div class="modal-content" style="max-width: 600px; padding: 0;">
+            <div style="padding: 20px 20px 10px 20px;">
+                <div class="modal-header" style="margin-bottom: 5px;">⚙️ Settings</div>
             </div>
-
-            <!-- Content Area -->
-            <div class="settings-content">
-                <!-- Payment Settings -->
-                <div id="settingsPayment" class="settings-section">
-                    <div class="settings-section-title">💳 Payment Settings</div>
-                    <div class="settings-section-desc">Configure your GCash payment information and QR code.</div>
-
-                    <div class="settings-form-group">
-                        <label>GCash Receiver Name</label>
-                        <input type="text" id="gcashName" placeholder="Enter receiver name">
-                    </div>
-
-                    <div class="settings-form-group">
-                        <label>GCash Number</label>
-                        <input type="text" id="gcashNumber" placeholder="09XXXXXXXXX" maxlength="11">
-                    </div>
-
-                    <div class="settings-form-group">
-                        <label>Upload GCash QR Code</label>
-                        <input type="file" id="gcashQRUpload" accept="image/*" onchange="handleQRUpload()">
-                        <div id="qrPreview" class="qr-preview-box empty">
-                            <div id="qrPreviewEmpty">
-                                📷 No QR code uploaded<br>
-                                <small>Upload your GCash QR code image</small>
-                            </div>
-                            <img id="qrPreviewImage" src="" alt="QR Preview" style="display: none;">
+            
+            <!-- Settings List -->
+            <div style="background: white;">
+                
+                <!-- Payment Settings Option -->
+                <div class="settings-item" onclick="openSettingsSection('payment')">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="font-size: 28px;">💳</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; color: #1F2937; margin-bottom: 4px;">Payment Settings</div>
+                            <div style="font-size: 13px; color: #6B7280;">GCash name, number, and QR code</div>
                         </div>
-                    </div>
-
-                    <button class="btn btn-primary" onclick="updatePaymentSettings()" style="width: 100%;">Save Payment Settings</button>
-                </div>
-
-                <!-- Data Backup Settings -->
-                <div id="settingsData" class="settings-section" style="display: none;">
-                    <div class="settings-section-title">💾 Data Backup</div>
-                    <div class="settings-section-desc">Export your data for backup or import previously saved data.</div>
-
-                    <div style="background: #DBEAFE; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                        <h4 style="margin-bottom: 10px; color: #1E40AF; font-size: 16px;">📥 Export Data</h4>
-                        <p style="color: #1E40AF; font-size: 13px; margin-bottom: 15px;">Download all your inventory, sessions, and settings as a JSON file.</p>
-                        <button class="btn btn-primary" onclick="exportData()" style="background: #3B82F6; width: 100%;">Download Backup File</button>
-                    </div>
-
-                    <div style="background: #FEF3C7; padding: 20px; border-radius: 8px;">
-                        <h4 style="margin-bottom: 10px; color: #92400E; font-size: 16px;">📤 Import Data</h4>
-                        <p style="color: #92400E; font-size: 13px; margin-bottom: 15px;">⚠️ This will replace all current data with imported data!</p>
-                        <input type="file" id="importFile" accept=".json" style="margin-bottom: 15px; width: 100%;">
-                        <button class="btn btn-primary" onclick="importData()" style="background: #F59E0B; width: 100%;">Import Backup File</button>
+                        <div style="font-size: 20px; color: #9CA3AF;">›</div>
                     </div>
                 </div>
 
-                <!-- Session Settings -->
-                <div id="settingsSession" class="settings-section" style="display: none;">
-                    <div class="settings-section-title">⏸️ Session Management</div>
-                    <div class="settings-section-desc">Control your current working session.</div>
-
-                    <div style="background: #FEE2E2; padding: 25px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 48px; margin-bottom: 15px;">⏸️</div>
-                        <h4 style="margin-bottom: 10px; color: #991B1B; font-size: 18px;">End Current Session</h4>
-                        <p style="color: #991B1B; font-size: 14px; margin-bottom: 20px;">This will close your current working session and save all order data to history.</p>
-                        <button class="btn btn-danger" id="endSessionBtnSettings" onclick="endSession()" disabled style="width: 100%; padding: 15px; font-size: 16px;">⏸️ End Session</button>
+                <!-- Export Data Option -->
+                <div class="settings-item" onclick="exportData()">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="font-size: 28px;">📥</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; color: #1F2937; margin-bottom: 4px;">Export Data</div>
+                            <div style="font-size: 13px; color: #6B7280;">Download backup as JSON file</div>
+                        </div>
+                        <div style="font-size: 20px; color: #9CA3AF;">›</div>
                     </div>
                 </div>
 
-                <!-- Security Settings -->
-                <div id="settingsSecurity" class="settings-section" style="display: none;">
-                    <div class="settings-section-title">🔐 Security Settings</div>
-                    <div class="settings-section-desc">Manage passwords for different system features.</div>
-
-                    <div style="background: #F3E8FF; padding: 25px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 48px; margin-bottom: 15px;">🔑</div>
-                        <h4 style="margin-bottom: 10px; color: #6B21A8; font-size: 18px;">Password Management</h4>
-                        <p style="color: #6B21A8; font-size: 14px; margin-bottom: 20px;">Change passwords for Login, Inventory, Edit Stock, and Reset Data.</p>
-                        <button class="btn btn-primary" onclick="showChangePasswordOptions()" style="background: #8B5CF6; width: 100%; padding: 15px; font-size: 16px;">🔑 Change Passwords</button>
+                <!-- Import Data Option -->
+                <div class="settings-item" onclick="openSettingsSection('import')">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="font-size: 28px;">📤</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; color: #1F2937; margin-bottom: 4px;">Import Data</div>
+                            <div style="font-size: 13px; color: #6B7280;">Restore from backup file</div>
+                        </div>
+                        <div style="font-size: 20px; color: #9CA3AF;">›</div>
                     </div>
                 </div>
+
+                <!-- End Session Option -->
+                <div class="settings-item" id="endSessionSettingsItem" onclick="endSessionFromSettings()">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="font-size: 28px;">⏸️</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; color: #1F2937; margin-bottom: 4px;">End Session</div>
+                            <div style="font-size: 13px; color: #6B7280;">Close current session</div>
+                        </div>
+                        <div style="font-size: 20px; color: #9CA3AF;">›</div>
+                    </div>
+                </div>
+
+                <!-- Change Password Option -->
+                <div class="settings-item" onclick="showChangePasswordOptions()">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="font-size: 28px;">🔐</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; color: #1F2937; margin-bottom: 4px;">Change Password</div>
+                            <div style="font-size: 13px; color: #6B7280;">Update security passwords</div>
+                        </div>
+                        <div style="font-size: 20px; color: #9CA3AF;">›</div>
+                    </div>
+                </div>
+
             </div>
+
+            <div style="padding: 20px;">
+                <button class="btn btn-secondary" onclick="closeModal('settingsModal')" style="width: 100%;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Settings Detail Modal -->
+    <div id="paymentSettingsModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <button onclick="backToSettings()" style="background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; color: #6B7280;">‹</button>
+                <div class="modal-header" style="margin: 0;">💳 Payment Settings</div>
+            </div>
+            
+            <label>GCash Receiver Name</label>
+            <input type="text" id="gcashName" placeholder="Enter receiver name">
+            
+            <label>GCash Number</label>
+            <input type="text" id="gcashNumber" placeholder="09XXXXXXXXX" maxlength="11">
+            
+            <label>Upload GCash QR Code</label>
+            <input type="file" id="gcashQRUpload" accept="image/*" onchange="handleQRUpload()" style="margin-bottom: 15px;">
+            
+            <div id="qrPreview" style="display: none; margin-bottom: 15px; text-align: center;">
+                <p style="font-size: 12px; color: #6B7280; margin-bottom: 8px;">Current QR Code:</p>
+                <img id="qrPreviewImage" src="" alt="QR Preview" style="max-width: 250px; border: 2px solid #D1D5DB; border-radius: 8px;">
+            </div>
+            
+            <button class="btn btn-primary" onclick="updatePaymentSettings()" style="width: 100%;">Save Changes</button>
+        </div>
+    </div>
+
+    <!-- Import Data Detail Modal -->
+    <div id="importDataModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <button onclick="backToSettings()" style="background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; color: #6B7280;">‹</button>
+                <div class="modal-header" style="margin: 0;">📤 Import Data</div>
+            </div>
+            
+            <div class="alert alert-warning" style="margin-bottom: 20px;">
+                ⚠️ Warning: This will replace ALL current data!
+            </div>
+            
+            <label>Select Backup File (.json)</label>
+            <input type="file" id="importFile" accept=".json" style="margin-bottom: 20px;">
+            
+            <button class="btn btn-primary" onclick="importData()" style="width: 100%; background: #F59E0B;">Import Data</button>
         </div>
     </div>
 
@@ -1896,52 +1937,45 @@
 
         // Settings Functions
         function openSettings() {
+            updateEndSessionButton();
             document.getElementById('settingsModal').classList.add('show');
+        }
+
+        function openSettingsSection(section) {
+            closeModal('settingsModal');
             
-            // Update End Session button state
-            const endSessionBtn = document.getElementById('endSessionMainBtn');
-            if (endSessionBtn) {
-                endSessionBtn.disabled = !currentSession;
+            if (section === 'payment') {
+                loadPaymentSettings();
+                document.getElementById('paymentSettingsModal').classList.add('show');
+            } else if (section === 'import') {
+                document.getElementById('importDataModal').classList.add('show');
             }
         }
 
-        function openPaymentSettings() {
-            closeModal('settingsModal');
-            loadPaymentSettings();
-            document.getElementById('paymentSettingsModal').classList.add('show');
+        function backToSettings() {
+            closeModal('paymentSettingsModal');
+            closeModal('importDataModal');
+            openSettings();
         }
 
-        function openSaveData() {
-            closeModal('settingsModal');
-            document.getElementById('saveDataModal').classList.add('show');
-        }
-
-        function openLoadData() {
-            closeModal('settingsModal');
-            document.getElementById('loadDataModal').classList.add('show');
-        }
-
-        function openEndSession() {
+        function endSessionFromSettings() {
             if (!currentSession) {
                 alert('⚠️ No active session to end!');
                 return;
             }
-
-            closeModal('settingsModal');
             
-            // Show session preview
-            const completedOrders = currentSession.orders.filter(o => o.status === 'completed');
-            const totalSales = completedOrders.reduce((sum, order) => sum + order.total, 0);
-            
-            document.getElementById('previewOrderCount').textContent = completedOrders.length;
-            document.getElementById('previewTotalSales').textContent = `₱${totalSales.toFixed(2)}`;
-            
-            document.getElementById('endSessionConfirmModal').classList.add('show');
+            if (confirm('End the current session?')) {
+                endSession();
+            }
         }
 
-        function confirmEndSession() {
-            endSession();
-            closeModal('endSessionConfirmModal');
+        function updateEndSessionButton() {
+            const endSessionItem = document.getElementById('endSessionSettingsItem');
+            if (currentSession) {
+                endSessionItem.classList.remove('disabled');
+            } else {
+                endSessionItem.classList.add('disabled');
+            }
         }
 
         function loadPaymentSettings() {
@@ -1983,7 +2017,7 @@
             localStorage.setItem('settings', JSON.stringify(settings));
 
             alert('✅ Payment settings updated successfully!');
-            closeModal('paymentSettingsModal');
+            backToSettings();
         }
 
         // Change Password Functions
