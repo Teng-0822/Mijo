@@ -326,6 +326,120 @@
             margin-top: 20px;
         }
 
+        /* Settings Modal Specific */
+        #settingsModal .modal-content {
+            max-width: 900px;
+            width: 95%;
+            padding: 0;
+            display: flex;
+            height: 600px;
+            max-height: 85vh;
+        }
+
+        .settings-sidebar {
+            width: 250px;
+            background: #F9FAFB;
+            border-right: 1px solid #E5E7EB;
+            padding: 20px;
+            overflow-y: auto;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .settings-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .settings-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #4B5563;
+            font-size: 14px;
+        }
+
+        .settings-menu-item:hover {
+            background: #E5E7EB;
+        }
+
+        .settings-menu-item.active {
+            background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .settings-menu-icon {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .settings-section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1F2937;
+        }
+
+        .settings-section-desc {
+            color: #6B7280;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .settings-form-group {
+            margin-bottom: 20px;
+        }
+
+        .settings-form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .settings-form-group input[type="text"],
+        .settings-form-group input[type="file"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .settings-form-group input:focus {
+            outline: none;
+            border-color: #D97706;
+        }
+
+        .qr-preview-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #F9FAFB;
+            border: 2px dashed #D1D5DB;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .qr-preview-box img {
+            max-width: 250px;
+            border: 2px solid #D1D5DB;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .qr-preview-box.empty {
+            color: #9CA3AF;
+            padding: 40px 15px;
+        }
+
         /* Alert Box */
         .alert {
             padding: 15px;
@@ -677,55 +791,193 @@
 
     <!-- Settings Modal -->
     <div id="settingsModal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">⚙️ Settings</div>
-            
-            <!-- Payment Settings -->
-            <div style="background: #F9FAFB; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 15px; color: #1F2937; font-size: 16px;">💳 Payment Settings</h3>
-                <label>GCash Receiver Name</label>
-                <input type="text" id="gcashName" placeholder="Enter receiver name">
-                <label>GCash Number</label>
-                <input type="text" id="gcashNumber" placeholder="09XXXXXXXXX" maxlength="11">
-                <label>Upload GCash QR Code</label>
-                <input type="file" id="gcashQRUpload" accept="image/*" onchange="handleQRUpload()" style="margin-bottom: 15px;">
-                <div id="qrPreview" style="display: none; margin-bottom: 15px;">
-                    <p style="font-size: 12px; color: #6B7280; margin-bottom: 8px;">Current QR Code:</p>
-                    <img id="qrPreviewImage" src="" alt="QR Preview" style="max-width: 200px; border: 2px solid #D1D5DB; border-radius: 8px;">
+        <div class="modal-content">
+            <!-- Sidebar Menu -->
+            <div class="settings-sidebar">
+                <h3 style="margin-bottom: 20px; color: #1F2937; font-size: 18px;">⚙️ Settings</h3>
+                <div class="settings-menu-item active" onclick="showSettingsSection('payment')">
+                    <span class="settings-menu-icon">💳</span>
+                    <span>Payment</span>
                 </div>
-                <button class="btn btn-primary" onclick="updatePaymentSettings()">Update Payment Info</button>
+                <div class="settings-menu-item" onclick="showSettingsSection('data')">
+                    <span class="settings-menu-icon">💾</span>
+                    <span>Data Backup</span>
+                </div>
+                <div class="settings-menu-item" onclick="showSettingsSection('session')">
+                    <span class="settings-menu-icon">⏸️</span>
+                    <span>Session</span>
+                </div>
+                <div class="settings-menu-item" onclick="showSettingsSection('security')">
+                    <span class="settings-menu-icon">🔐</span>
+                    <span>Security</span>
+                </div>
+                <div style="border-top: 1px solid #E5E7EB; margin: 15px 0; padding-top: 15px;">
+                    <button class="btn btn-secondary" onclick="closeModal('settingsModal')" style="width: 100%; padding: 10px;">Close</button>
+                </div>
             </div>
 
-            <!-- Save Data -->
-            <div style="background: #DBEAFE; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 15px; color: #1F2937; font-size: 16px;">💾 Save Data</h3>
-                <p style="color: #1E40AF; font-size: 14px; margin-bottom: 15px;">Export all your data to a JSON file for backup.</p>
-                <button class="btn btn-primary" onclick="exportData()" style="background: #3B82F6;">📥 Export Data</button>
-            </div>
+            <!-- Content Area -->
+            <div class="settings-content">
+                <!-- Payment Settings -->
+                <div id="settingsPayment" class="settings-section">
+                    <div class="settings-section-title">💳 Payment Settings</div>
+                    <div class="settings-section-desc">Configure your GCash payment information and QR code.</div>
 
-            <!-- Load Data -->
-            <div style="background: #FEF3C7; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 15px; color: #1F2937; font-size: 16px;">📂 Load Data</h3>
-                <p style="color: #92400E; font-size: 14px; margin-bottom: 15px;">Import previously exported data. This will replace all current data!</p>
-                <input type="file" id="importFile" accept=".json" style="margin-bottom: 15px;">
-                <button class="btn btn-primary" onclick="importData()" style="background: #F59E0B;">📤 Import Data</button>
-            </div>
+                    <div class="settings-form-group">
+                        <label>GCash Receiver Name</label>
+                        <input type="text" id="gcashName" placeholder="Enter receiver name">
+                    </div>
 
-            <!-- End Session -->
-            <div style="background: #FEE2E2; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 15px; color: #1F2937; font-size: 16px;">⏸️ End Session</h3>
-                <p style="color: #991B1B; font-size: 14px; margin-bottom: 15px;">Close the current working session and save all order data.</p>
-                <button class="btn btn-danger" id="endSessionBtnSettings" onclick="endSession()" disabled>⏸️ End Current Session</button>
-            </div>
+                    <div class="settings-form-group">
+                        <label>GCash Number</label>
+                        <input type="text" id="gcashNumber" placeholder="09XXXXXXXXX" maxlength="11">
+                    </div>
 
-            <!-- Change Password -->
-            <div style="background: #F3E8FF; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <h3 style="margin-bottom: 15px; color: #1F2937; font-size: 16px;">🔐 Change Password</h3>
-                <p style="color: #6B21A8; font-size: 14px; margin-bottom: 15px;">Update security passwords for different features.</p>
-                <button class="btn btn-primary" onclick="showChangePasswordOptions()" style="background: #8B5CF6;">🔑 Change Passwords</button>
-            </div>
+                    <div class="settings-form-group">
+                        <label>Upload GCash QR Code</label>
+                        <input type="file" id="gcashQRUpload" accept="image/*" onchange="handleQRUpload()">
+                        <div id="qrPreview" class="qr-preview-box empty">
+                            <div id="qrPreviewEmpty">
+                                📷 No QR code uploaded<br>
+                                <small>Upload your GCash QR code image</small>
+                            </div>
+                            <img id="qrPreviewImage" src="" alt="QR Preview" style="display: none;">
+                        </div>
+                    </div>
 
-            <button class="btn btn-secondary" onclick="closeModal('settingsModal')" style="width: 100%;">Close</button>
+                    <button class="btn btn-primary" onclick="updatePaymentSettings()" style="width: 100%;">Save Payment Settings</button>
+                </div>
+
+                <!-- Data Backup Settings -->
+                <div id="settingsData" class="settings-section" style="display: none;">
+                    <div class="settings-section-title">💾 Data Backup</div>
+                    <div class="settings-section-desc">Export your data for backup or import previously saved data.</div>
+
+                    <div style="background: #DBEAFE; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 10px; color: #1E40AF; font-size: 16px;">📥 Export Data</h4>
+                        <p style="color: #1E40AF; font-size: 13px; margin-bottom: 15px;">Download all your inventory, sessions, and settings as a JSON file.</p>
+                        <button class="btn btn-primary" onclick="exportData()" style="background: #3B82F6; width: 100%;">Download Backup File</button>
+                    </div>
+
+                    <div style="background: #FEF3C7; padding: 20px; border-radius: 8px;">
+                        <h4 style="margin-bottom: 10px; color: #92400E; font-size: 16px;">📤 Import Data</h4>
+                        <p style="color: #92400E; font-size: 13px; margin-bottom: 15px;">⚠️ This will replace all current data with imported data!</p>
+                        <input type="file" id="importFile" accept=".json" style="margin-bottom: 15px; width: 100%;">
+                        <button class="btn btn-primary" onclick="importData()" style="background: #F59E0B; width: 100%;">Import Backup File</button>
+                    </div>
+                </div>
+
+                <!-- Session Settings -->
+                <div id="settingsSession" class="settings-section" style="display: none;">
+                    <div class="settings-section-title">⏸️ Session Management</div>
+                    <div class="settings-section-desc">Control your current working session.</div>
+
+                    <div style="background: #FEE2E2; padding: 25px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">⏸️</div>
+                        <h4 style="margin-bottom: 10px; color: #991B1B; font-size: 18px;">End Current Session</h4>
+                        <p style="color: #991B1B; font-size: 14px; margin-bottom: 20px;">This will close your current working session and save all order data to history.</p>
+                        <button class="btn btn-danger" id="endSessionBtnSettings" onclick="endSession()" disabled style="width: 100%; padding: 15px; font-size: 16px;">⏸️ End Session</button>
+                    </div>
+                </div>
+
+                <!-- Security Settings -->
+                <div id="settingsSecurity" class="settings-section" style="display: none;">
+                    <div class="settings-section-title">🔐 Security Settings</div>
+                    <div class="settings-section-desc">Manage passwords for different system features.</div>
+
+                    <div style="background: #F3E8FF; padding: 25px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🔑</div>
+                        <h4 style="margin-bottom: 10px; color: #6B21A8; font-size: 18px;">Password Management</h4>
+                        <p style="color: #6B21A8; font-size: 14px; margin-bottom: 20px;">Change passwords for Login, Inventory, Edit Stock, and Reset Data.</p>
+                        <button class="btn btn-primary" onclick="showChangePasswordOptions()" style="background: #8B5CF6; width: 100%; padding: 15px; font-size: 16px;">🔑 Change Passwords</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Settings Modal -->
+    <div id="paymentSettingsModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">💳 Payment Settings</div>
+            
+            <label>GCash Receiver Name</label>
+            <input type="text" id="gcashName" placeholder="Enter receiver name">
+            
+            <label>GCash Number</label>
+            <input type="text" id="gcashNumber" placeholder="09XXXXXXXXX" maxlength="11">
+            
+            <label>Upload GCash QR Code</label>
+            <input type="file" id="gcashQRUpload" accept="image/*" onchange="handleQRUpload()" style="margin-bottom: 15px;">
+            
+            <div id="qrPreview" style="display: none; margin-bottom: 15px;">
+                <p style="font-size: 12px; color: #6B7280; margin-bottom: 8px;">Current QR Code:</p>
+                <img id="qrPreviewImage" src="" alt="QR Preview" style="max-width: 200px; border: 2px solid #D1D5DB; border-radius: 8px;">
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="updatePaymentSettings()">Save Changes</button>
+                <button class="btn btn-secondary" onclick="closeModal('paymentSettingsModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Data Modal -->
+    <div id="saveDataModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">💾 Save Data</div>
+            <p style="color: #6B7280; margin-bottom: 20px;">Export all your POS data to a JSON backup file.</p>
+            
+            <div style="background: #F0F9FF; border: 2px solid #3B82F6; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <p style="font-size: 14px; color: #1E40AF; margin-bottom: 8px;"><strong>Backup includes:</strong></p>
+                <ul style="margin-left: 20px; color: #1E40AF; font-size: 13px;">
+                    <li>All inventory items</li>
+                    <li>Completed sessions</li>
+                    <li>Payment settings</li>
+                    <li>GCash QR code</li>
+                </ul>
+            </div>
+            
+            <button class="btn btn-primary" onclick="exportData()" style="width: 100%; background: #3B82F6;">📥 Download Backup</button>
+            <button class="btn btn-secondary" onclick="closeModal('saveDataModal')" style="width: 100%; margin-top: 10px;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Load Data Modal -->
+    <div id="loadDataModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">📂 Load Data</div>
+            
+            <div style="background: #FEF3C7; border: 2px solid #F59E0B; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <p style="font-size: 14px; color: #92400E;"><strong>⚠️ Warning:</strong> This will replace all current data!</p>
+            </div>
+            
+            <label>Select Backup File</label>
+            <input type="file" id="importFile" accept=".json" style="margin-bottom: 20px;">
+            
+            <button class="btn btn-primary" onclick="importData()" style="width: 100%; background: #F59E0B;">📤 Import Backup</button>
+            <button class="btn btn-secondary" onclick="closeModal('loadDataModal')" style="width: 100%; margin-top: 10px;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- End Session Confirmation Modal -->
+    <div id="endSessionConfirmModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">⏸️ End Current Session</div>
+            
+            <div style="background: #FEE2E2; border: 2px solid #EF4444; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <p style="font-size: 14px; color: #991B1B;"><strong>Are you sure?</strong></p>
+                <p style="font-size: 13px; color: #991B1B; margin-top: 8px;">This will close the current session and save all order data.</p>
+            </div>
+            
+            <div id="sessionSummaryPreview" style="background: #F9FAFB; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <p style="font-size: 13px; color: #6B7280; margin-bottom: 8px;">Current Session:</p>
+                <p style="font-size: 14px; color: #1F2937;"><strong>Orders:</strong> <span id="previewOrderCount">0</span></p>
+                <p style="font-size: 14px; color: #1F2937;"><strong>Total Sales:</strong> <span id="previewTotalSales">₱0.00</span></p>
+            </div>
+            
+            <button class="btn btn-danger" onclick="confirmEndSession()" style="width: 100%;">⏸️ End Session</button>
+            <button class="btn btn-secondary" onclick="closeModal('endSessionConfirmModal')" style="width: 100%; margin-top: 10px;">Cancel</button>
         </div>
     </div>
 
@@ -841,8 +1093,6 @@
             
             currentSession = null;
             localStorage.removeItem('currentSession');
-
-            closeModal('settingsModal');
             
             alert(`✅ Session ended!\n\nTotal Sales: ₱${totalSales.toFixed(2)}\nTotal Orders: ${completedSession.orders.length}`);
             
@@ -1522,19 +1772,16 @@
         // UI Updates
         function updateUI() {
             const startBtn = document.getElementById('startSessionBtn');
-            const endBtnSettings = document.getElementById('endSessionBtnSettings');
             const status = document.getElementById('sessionStatus');
             const orderAlert = document.getElementById('orderAlert');
 
             if (currentSession) {
                 startBtn.disabled = true;
-                if (endBtnSettings) endBtnSettings.disabled = false;
                 const startTime = new Date(currentSession.startTime);
                 status.textContent = `Active session started: ${startTime.toLocaleString()}`;
                 orderAlert.innerHTML = '';
             } else {
                 startBtn.disabled = false;
-                if (endBtnSettings) endBtnSettings.disabled = true;
                 status.textContent = 'No active session';
                 orderAlert.innerHTML = '<div class="alert alert-warning">⚠️ Please start a session to begin taking orders</div>';
             }
@@ -1649,8 +1896,52 @@
 
         // Settings Functions
         function openSettings() {
-            loadPaymentSettings();
             document.getElementById('settingsModal').classList.add('show');
+            
+            // Update End Session button state
+            const endSessionBtn = document.getElementById('endSessionMainBtn');
+            if (endSessionBtn) {
+                endSessionBtn.disabled = !currentSession;
+            }
+        }
+
+        function openPaymentSettings() {
+            closeModal('settingsModal');
+            loadPaymentSettings();
+            document.getElementById('paymentSettingsModal').classList.add('show');
+        }
+
+        function openSaveData() {
+            closeModal('settingsModal');
+            document.getElementById('saveDataModal').classList.add('show');
+        }
+
+        function openLoadData() {
+            closeModal('settingsModal');
+            document.getElementById('loadDataModal').classList.add('show');
+        }
+
+        function openEndSession() {
+            if (!currentSession) {
+                alert('⚠️ No active session to end!');
+                return;
+            }
+
+            closeModal('settingsModal');
+            
+            // Show session preview
+            const completedOrders = currentSession.orders.filter(o => o.status === 'completed');
+            const totalSales = completedOrders.reduce((sum, order) => sum + order.total, 0);
+            
+            document.getElementById('previewOrderCount').textContent = completedOrders.length;
+            document.getElementById('previewTotalSales').textContent = `₱${totalSales.toFixed(2)}`;
+            
+            document.getElementById('endSessionConfirmModal').classList.add('show');
+        }
+
+        function confirmEndSession() {
+            endSession();
+            closeModal('endSessionConfirmModal');
         }
 
         function loadPaymentSettings() {
@@ -1692,6 +1983,7 @@
             localStorage.setItem('settings', JSON.stringify(settings));
 
             alert('✅ Payment settings updated successfully!');
+            closeModal('paymentSettingsModal');
         }
 
         // Change Password Functions
@@ -1801,6 +2093,7 @@
             URL.revokeObjectURL(url);
 
             alert('✅ Data exported successfully!\nFile: ' + filename);
+            closeModal('saveDataModal');
         }
 
         function importData() {
@@ -1830,7 +2123,7 @@
                     inventory = data.inventory || [];
                     sessions = data.sessions || [];
                     currentSession = data.currentSession || null;
-                    settings = data.settings || { gcashName: '', gcashNumber: '' };
+                    settings = data.settings || { gcashName: '', gcashNumber: '', gcashQRCode: '' };
 
                     // Save to localStorage
                     localStorage.setItem('inventory', JSON.stringify(inventory));
@@ -1852,7 +2145,7 @@
 
                     alert('✅ Data imported successfully!\n\nInventory: ' + inventory.length + ' items\nSessions: ' + sessions.length);
                     
-                    closeModal('settingsModal');
+                    closeModal('loadDataModal');
                 } catch (error) {
                     alert('❌ Error importing data: ' + error.message + '\n\nPlease make sure the file is a valid POS data export.');
                 }
